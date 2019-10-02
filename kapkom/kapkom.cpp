@@ -15,6 +15,7 @@
 
 int pwn()
 {
+	// 0x000000d1
 	SYSTEM_PROCESS_INFO systemProcessInfo;
 	PsLookupProcessByProcessId((HANDLE)4, &systemProcessInfo);
 	return (int)systemProcessInfo.ProcessId;
