@@ -244,6 +244,11 @@ typedef NTSTATUS(WINAPI* PNTQUERYINTERVALPROFILE)(DWORD profileSource, PULONG in
 _PsLookupProcessByProcessId PsLookupProcessByProcessId = NULL;
 _NtQuerySystemInformation NtQuerySystemInformation = NULL;
 
+void* GetKernelFunction(HMODULE kernel, void* kernelBase, const char* name)
+{
+	return PVOID((uint64_t)kernelBase + (uint64_t)GetProcAddress(kernel, "PsLookupProcessByProcessId") - (uint64_t)kernel);
+}
+
 bool InitializeKernel()
 {
 	NtQuerySystemInformation = (_NtQuerySystemInformation)GetProcAddress(GetModuleHandle(L"ntdll.dll"), "NtQuerySystemInformation");
@@ -260,7 +265,7 @@ bool InitializeKernel()
 
 	if (kernel)
 	{
-		PsLookupProcessByProcessId = (_PsLookupProcessByProcessId)GetProcAddress(kernel, "PsLookupProcessByProcessId");
+		PsLookupProcessByProcessId = (_PsLookupProcessByProcessId)GetKernelFunction(kernel, kernelBase, "PsLookupProcessByProcessId");
 
 #ifdef KERNEL_DEBUG
 		std::cout << "KernelBase: 0x" << std::hex << kernelBase << std::endl;
