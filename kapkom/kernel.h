@@ -246,7 +246,7 @@ _NtQuerySystemInformation NtQuerySystemInformation = NULL;
 
 void* GetKernelFunction(HMODULE kernel, void* kernelBase, const char* name)
 {
-	return PVOID((uint64_t)kernelBase + (uint64_t)GetProcAddress(kernel, "PsLookupProcessByProcessId") - (uint64_t)kernel);
+	return PVOID((uint64_t)kernelBase + (uint64_t)GetProcAddress(kernel, name) - (uint64_t)kernel);
 }
 
 bool InitializeKernel()
