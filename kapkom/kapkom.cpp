@@ -61,7 +61,6 @@ int main()
 
 		if (buffer)
 		{
-
 			memcpy(buffer, exploit, sizeof(exploit));
 
 			*(uint64_t*)buffer = (uint64_t)(buffer + 8);
