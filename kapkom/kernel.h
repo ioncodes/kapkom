@@ -270,33 +270,45 @@ bool InitializeKernel()
 	DWORD len;
 	NtQuerySystemInformation(SystemModuleInformation, NULL, 0, &len);
 	PRTL_PROCESS_MODULES modules = (PRTL_PROCESS_MODULES)VirtualAlloc(NULL, len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-	NtQuerySystemInformation(SystemModuleInformation, modules, len, &len);
-
-	void* kernelBase = modules->Modules[0].ImageBase;
-	const char* kernelImage = (const char*)modules->Modules[0].FullPathName;
-	const char* kernelName = (const char*)modules->Modules[0].FullPathName + modules->Modules[0].OffsetToFileName;
-
-	HMODULE kernel = LoadLibraryExA(kernelName, NULL, DONT_RESOLVE_DLL_REFERENCES);
-
-	if (kernel)
+	if (modules)
 	{
-		PsLookupProcessByProcessId = (_PsLookupProcessByProcessId)GetKernelFunction(kernel, kernelBase, "PsLookupProcessByProcessId");
-		PsReferencePrimaryToken = (_PsReferencePrimaryToken)GetKernelFunction(kernel, kernelBase, "PsReferencePrimaryToken");
+		NtQuerySystemInformation(SystemModuleInformation, modules, len, &len);
+
+		void* kernelBase = modules->Modules[0].ImageBase;
+		const char* kernelImage = (const char*)modules->Modules[0].FullPathName;
+		const char* kernelName = (const char*)modules->Modules[0].FullPathName + modules->Modules[0].OffsetToFileName;
+
+		HMODULE kernel = LoadLibraryExA(kernelName, NULL, DONT_RESOLVE_DLL_REFERENCES);
+
+		if (kernel)
+		{
+			PsLookupProcessByProcessId = (_PsLookupProcessByProcessId)GetKernelFunction(kernel, kernelBase, "PsLookupProcessByProcessId");
+			PsReferencePrimaryToken = (_PsReferencePrimaryToken)GetKernelFunction(kernel, kernelBase, "PsReferencePrimaryToken");
 
 #ifdef KERNEL_DEBUG
-		std::cout << "KernelBase: 0x" << std::hex << kernelBase << std::endl;
-		std::cout << "KernelImage: " << kernelImage << std::endl;
-		std::cout << "KernelName: " << kernelName << std::endl;
-		std::cout << "NtQuerySystemInformation: 0x" << std::hex << NtQuerySystemInformation << std::endl;
-		std::cout << "PsLookupProcessByProcessId: 0x" << std::hex << PsLookupProcessByProcessId << std::endl;
+			std::cout << "KernelBase: 0x" << std::hex << kernelBase << std::endl;
+			std::cout << "KernelImage: " << kernelImage << std::endl;
+			std::cout << "KernelName: " << kernelName << std::endl;
+			std::cout << "NtQuerySystemInformation: 0x" << std::hex << NtQuerySystemInformation << std::endl;
+			std::cout << "PsLookupProcessByProcessId: 0x" << std::hex << PsLookupProcessByProcessId << std::endl;
 #endif
 
-		return true; 
+			VirtualFree(modules, NULL, MEM_RELEASE);
+			FreeLibrary(kernel);
+
+			return true;
+		}
+		else
+		{
+#ifdef KERNEL_DEBUG
+			std::cout << "Error loading kernel" << std::endl;
+#endif
+		}
 	}
 	else
 	{
 #ifdef KERNEL_DEBUG
-		std::cout << "Error loading kernel" << std::endl;
+		std::cout << "Error loading modules" << std::endl;
 #endif
 	}
 
