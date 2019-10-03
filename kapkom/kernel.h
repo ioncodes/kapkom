@@ -170,20 +170,20 @@ typedef enum _SYSTEM_INFORMATION_CLASS
 typedef struct _RTL_PROCESS_MODULE_INFORMATION
 {
 	HANDLE Section;
-	PVOID MappedBase;
-	PVOID ImageBase;
-	ULONG ImageSize;
-	ULONG Flags;
+	PVOID  MappedBase;
+	PVOID  ImageBase;
+	ULONG  ImageSize;
+	ULONG  Flags;
 	USHORT LoadOrderIndex;
 	USHORT InitOrderIndex;
 	USHORT LoadCount;
 	USHORT OffsetToFileName;
-	UCHAR FullPathName[256];
+	UCHAR  FullPathName[256];
 } RTL_PROCESS_MODULE_INFORMATION, * PRTL_PROCESS_MODULE_INFORMATION;
 
 typedef struct _RTL_PROCESS_MODULES
 {
-	ULONG NumberOfModules;
+	ULONG                          NumberOfModules;
 	RTL_PROCESS_MODULE_INFORMATION Modules[1];
 } RTL_PROCESS_MODULES, * PRTL_PROCESS_MODULES;
 
@@ -194,16 +194,16 @@ typedef struct
 	PVOID ImageBaseAddress;
 	ULONG ImageSize;
 	ULONG Flags;
-	WORD Id;
-	WORD Rank;
-	WORD w018;
-	WORD NameOffset;
-	BYTE Name[256];
+	WORD  Id;
+	WORD  Rank;
+	WORD  w018;
+	WORD  NameOffset;
+	BYTE  Name[256];
 } SYSTEM_MODULE, * PSYSTEM_MODULE;
 
 typedef struct
 {
-	ULONG ModulesCount;
+	ULONG         ModulesCount;
 	SYSTEM_MODULE Modules[0];
 } SYSTEM_MODULE_INFORMATION, *PSYSTEM_MODULE_INFORMATION;
 
@@ -228,8 +228,8 @@ typedef struct _SYSTEM_PROCESS_INFO
 } SYSTEM_PROCESS_INFO, * PSYSTEM_PROCESS_INFO;
 
 typedef NTSTATUS(NTAPI* _PsLookupProcessByProcessId)(
-	HANDLE					ProcessId,
-	SYSTEM_PROCESS_INFO*	Process
+	HANDLE                  ProcessId,
+	SYSTEM_PROCESS_INFO*    Process
 );
 typedef NTSTATUS(WINAPI* _NtQuerySystemInformation)(
 	SYSTEM_INFORMATION_CLASS SystemInformationClass,
