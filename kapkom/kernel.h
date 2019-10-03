@@ -3,8 +3,6 @@
 #include <WinIoCtl.h>
 #include <ntstatus.h>
 
-// https://github.com/rapid7/metasploit-framework/blob/master/external/source/win_kernel_common/kernel.c
-
 typedef enum _SYSTEM_INFORMATION_CLASS
 {
 	SystemBasicInformation = 0,
@@ -240,8 +238,6 @@ typedef NTSTATUS(WINAPI* _NtQuerySystemInformation)(
 typedef PACCESS_TOKEN(NTAPI* _PsReferencePrimaryToken)(
 	PVOID Process // PEPROCESS
 );
-typedef NTSTATUS(WINAPI* PNTQUERYSYSTEMINFORMATION)(SYSTEM_INFORMATION_CLASS sysInfoClass, PVOID sysInfo, ULONG sysInfoLength, PULONG returnLength);
-typedef NTSTATUS(WINAPI* PNTQUERYINTERVALPROFILE)(DWORD profileSource, PULONG interval);
 
 _NtQuerySystemInformation NtQuerySystemInformation = NULL;
 _PsLookupProcessByProcessId PsLookupProcessByProcessId = NULL;

