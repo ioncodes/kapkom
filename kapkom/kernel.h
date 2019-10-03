@@ -237,12 +237,15 @@ typedef NTSTATUS(WINAPI* _NtQuerySystemInformation)(
 	ULONG                    SystemInformationLength,
 	PULONG                   ReturnLength
 );
-typedef PACCESS_TOKEN(NTAPI* PREFPRIMARYTOKEN)(PVOID process);
+typedef PACCESS_TOKEN(NTAPI* _PsReferencePrimaryToken)(
+	PVOID Process // PEPROCESS
+);
 typedef NTSTATUS(WINAPI* PNTQUERYSYSTEMINFORMATION)(SYSTEM_INFORMATION_CLASS sysInfoClass, PVOID sysInfo, ULONG sysInfoLength, PULONG returnLength);
 typedef NTSTATUS(WINAPI* PNTQUERYINTERVALPROFILE)(DWORD profileSource, PULONG interval);
 
-_PsLookupProcessByProcessId PsLookupProcessByProcessId = NULL;
 _NtQuerySystemInformation NtQuerySystemInformation = NULL;
+_PsLookupProcessByProcessId PsLookupProcessByProcessId = NULL;
+_PsReferencePrimaryToken PsReferencePrimaryToken = NULL;
 
 void* GetKernelFunction(HMODULE kernel, void* kernelBase, const char* name)
 {
@@ -266,6 +269,7 @@ bool InitializeKernel()
 	if (kernel)
 	{
 		PsLookupProcessByProcessId = (_PsLookupProcessByProcessId)GetKernelFunction(kernel, kernelBase, "PsLookupProcessByProcessId");
+		PsReferencePrimaryToken = (_PsReferencePrimaryToken)GetKernelFunction(kernel, kernelBase, "PsReferencePrimaryToken");
 
 #ifdef KERNEL_DEBUG
 		std::cout << "KernelBase: 0x" << std::hex << kernelBase << std::endl;
