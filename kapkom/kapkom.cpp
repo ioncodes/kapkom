@@ -8,10 +8,14 @@
 #include <future>
 #include "kernel.h"
 
+int currentProcessId = NULL;
+
 void pwn()
 {
 	SYSTEM_PROCESS_INFO systemProcessInfo;
+	SYSTEM_PROCESS_INFO currentProcessInfo;
 	PsLookupProcessByProcessId((HANDLE)4, &systemProcessInfo);
+	PsLookupProcessByProcessId((HANDLE)currentProcessId, &currentProcessInfo);
 }
 
 int main() 
@@ -31,6 +35,8 @@ int main()
 
 	if (driver != INVALID_HANDLE_VALUE && InitializeKernel())
 	{
+		currentProcessId = GetCurrentProcessId();
+
 		std::cout << std::endl;
 
 		std::cout << "Found handle: " << std::hex << handle << std::endl;
